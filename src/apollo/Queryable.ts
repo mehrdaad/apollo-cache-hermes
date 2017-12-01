@@ -45,12 +45,7 @@ export abstract class ApolloQueryable implements DataProxy {
 
   readFragment<FragmentType>(options: DataProxy.Fragment, optimistic?: true): FragmentType | null {
     // TODO: Support nested fragments.
-    const rawOperation = buildRawOperationFromFragment(
-      options.fragment,
-      options.id,
-      options.variables as JsonObject,
-      options.fragmentName,
-    );
+    const rawOperation = buildRawOperationFromFragment(options);
     return this._queryable.read(rawOperation, optimistic).result as any;
   }
 
@@ -64,14 +59,10 @@ export abstract class ApolloQueryable implements DataProxy {
     this._queryable.write(rawOperation, options.data);
   }
 
-  writeFragment(options: Cache.WriteFragmentOptions): void {
+  // TODO (yuisu)L: better typing
+  writeFragment(options: Cache.WriteFragmentOptions & { paths?: string[], fieldArguments?: object }): void {
     // TODO: Support nested fragments.
-    const rawOperation = buildRawOperationFromFragment(
-      options.fragment,
-      options.id,
-      options.variables as JsonObject,
-      options.fragmentName,
-    );
+    const rawOperation = buildRawOperationFromFragment(options);
     this._queryable.write(rawOperation, options.data);
   }
 
