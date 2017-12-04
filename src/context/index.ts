@@ -1,2 +1,2 @@
 export { CacheContext } from './CacheContext';
-export { QueryInfo } from './QueryInfo';
+export { StaticQueryInfo } from './QueryInfo';

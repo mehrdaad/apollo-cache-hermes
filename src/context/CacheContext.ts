@@ -10,7 +10,7 @@ import { EntityId, OperationInstance, RawOperation } from '../schema';
 import { isObject } from '../util';
 
 import { ConsoleTracer } from './ConsoleTracer';
-import { QueryInfo } from './QueryInfo';
+import { StaticQueryInfo } from './QueryInfo';
 import { Tracer } from './Tracer';
 
 export namespace CacheContext {
@@ -165,7 +165,7 @@ export class CacheContext {
   /** Whether __typename should be injected into nodes in queries. */
   private readonly _addTypename: boolean;
   /** All currently known & processed GraphQL documents. */
-  private readonly _queryInfoMap = new Map<string, QueryInfo>();
+  private readonly _queryInfoMap = new Map<string, StaticQueryInfo>();
   /** All currently known & parsed queries, for identity mapping. */
   private readonly _operationMap = new Map<string, OperationInstance[]>();
 
@@ -235,9 +235,9 @@ export class CacheContext {
   /**
    * Retrieves a memoized QueryInfo for a given GraphQL document.
    */
-  private _queryInfo(cacheKey: string, raw: RawOperation): QueryInfo {
+  private _queryInfo(cacheKey: string, raw: RawOperation): StaticQueryInfo {
     if (!this._queryInfoMap.has(cacheKey)) {
-      this._queryInfoMap.set(cacheKey, new QueryInfo(this, raw));
+      this._queryInfoMap.set(cacheKey, new StaticQueryInfo(this, raw));
     }
     return this._queryInfoMap.get(cacheKey)!;
   }

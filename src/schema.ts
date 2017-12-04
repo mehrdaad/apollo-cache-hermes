@@ -1,10 +1,11 @@
 import { DocumentNode } from 'graphql'; // eslint-disable-line import/no-extraneous-dependencies
 
-import { QueryInfo } from './context';
+import { StaticQueryInfo } from './context';
 import { NodeReference } from './nodes';
 import { ParsedQuery } from './ParsedQueryNode';
 import { JsonObject, JsonValue, NestedValue } from './primitive';
 import { isScalar, isObject } from './util';
+import { DataProxy } from 'apollo-cache';
 
 /**
  * Change ids track diffs to the store that may eventually be rolled back.
@@ -45,8 +46,10 @@ export interface RawOperation {
   readonly variables?: JsonObject;
   /** Fragment's name in readFragment/writeFragment with multiple fragments */
   readonly fragmentName?: string;
+  /** */
   readonly paths?: string[];
-  readonly fieldArguments?: object;
+  /** */
+  readonly fieldArguments?: DataProxy.FieldArguments;
   /** A boolean flag indicating whether the operation is constructed
    * from fragment only document.
    * This is used to skip queryInfo._assertAllVariablesDeclared
@@ -62,7 +65,7 @@ export interface OperationInstance {
   /** The id of the node to begin the query at. */
   readonly rootId: NodeId;
   /** A parsed GraphQL document, declaring an operation to execute. */
-  readonly info: QueryInfo;
+  readonly info: StaticQueryInfo;
   /** Parsed form of the query, with values substituted for any variables. */
   readonly parsedQuery: ParsedQuery;
   /** Whether the operation contains _no_ parameterized values. */

@@ -15,6 +15,7 @@ import {
   variablesInOperation,
 } from '../util';
 
+import { BasicQueryInfo } from './BasicQueryInfo';  // eslint-disable-line import/named
 import { CacheContext } from './CacheContext';
 
 /**
@@ -23,7 +24,7 @@ import { CacheContext } from './CacheContext';
  * We do a fair bit of pre-processing over them, and these objects hang onto
  * that information.
  */
-export class QueryInfo {
+export class StaticQueryInfo implements BasicQueryInfo {
 
   /** The original document (after __typename fields are injected). */
   public readonly document: DocumentNode;
