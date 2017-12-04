@@ -204,7 +204,7 @@ export class CacheContext {
     // It appears like Apollo or someone upstream is cloning or otherwise
     // modifying the queries that are passed down.  Thus, the operation source
     // is a more reliable cache key…
-    const cacheKey = operationCacheKey(raw.document, raw.fragmentName);
+    const cacheKey = operationCacheKey(raw);
     let operationInstances = this._operationMap.get(cacheKey);
     if (!operationInstances) {
       operationInstances = [];
@@ -265,9 +265,13 @@ export function defaultEntityIdMapper(node: { id?: any }) {
   return node.id;
 }
 
-export function operationCacheKey(document: DocumentNode, fragmentName?: string) {
-  if (fragmentName) {
-    return `${fragmentName}❖${document.loc!.source.body}`;
+export function operationCacheKey(raw: RawOperation) {
+  if (raw.fromFragmentDocument) {
+    const fragmentName = raw.fragmentName ? `${raw.fragmentName}❖` : '';
+    const paths = raw.paths ? `${JSON.stringify(raw.paths)}❖` : '';
+    const fieldArguments = raw.fieldArguments ? `${JSON.stringify(raw.fieldArguments)}❖` : '';
+    return `${fragmentName}${paths}${fieldArguments}${raw.document.loc!.source.body}`;
   }
-  return document.loc!.source.body;
+
+  return raw.document.loc!.source.body;
 }
