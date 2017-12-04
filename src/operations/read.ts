@@ -8,6 +8,7 @@ import { CacheContext } from '../context';
 import { GraphSnapshot } from '../GraphSnapshot';
 import { NodeId, OperationInstance, RawOperation, StaticNodeId } from '../schema';
 import { isObject } from '../util';
+import { StaticQueryInfo } from '../context/StaticQueryInfo';
 
 export interface QueryResult {
   /** The value of the root requested by a query. */
@@ -208,34 +209,37 @@ export function _visitSelection(
     }
   }
 
-  // TODO: Memoize per query, and propagate through cache snapshots.
-  walkOperation(query.info.document, result, (value, fields) => {
-    if (value === undefined) {
-      complete = false;
-    }
-
-    // If we're not including node ids, we can stop the walk right here.
-    if (!complete) return !includeNodeIds;
-
-    if (!isObject(value)) return false;
-
-    if (nodeIds && isObject(value)) {
-      const nodeId = context.entityIdForValue(value);
-      if (nodeId !== undefined) {
-        nodeIds.add(nodeId);
-      }
-    }
-
-    for (const field of fields) {
-      const nameNode = field.alias || field.name;
-      if (!(nameNode.value in value)) {
+  if (query.info instanceof StaticQueryInfo) {
+    // TODO: Walk ParsedQueryNode instead
+    // TODO: Memoize per query, and propagate through cache snapshots.
+    walkOperation(query.info.document, result, (value, fields) => {
+      if (value === undefined) {
         complete = false;
-        break;
       }
-    }
 
-    return false;
-  });
+      // If we're not including node ids, we can stop the walk right here.
+      if (!complete) return !includeNodeIds;
+
+      if (!isObject(value)) return false;
+
+      if (nodeIds && isObject(value)) {
+        const nodeId = context.entityIdForValue(value);
+        if (nodeId !== undefined) {
+          nodeIds.add(nodeId);
+        }
+      }
+
+      for (const field of fields) {
+        const nameNode = field.alias || field.name;
+        if (!(nameNode.value in value)) {
+          complete = false;
+          break;
+        }
+      }
+
+      return false;
+    });
+  }
 
   return { complete, nodeIds };
 }

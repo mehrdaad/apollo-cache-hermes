@@ -30,6 +30,8 @@ export class DynamicQueryInfo implements BasicQueryInfo {
 
   /** All fragments in the document, indexed by name. */
   readonly fragmentMap: FragmentMap;
+  /** The name of the operation. */
+  readonly operationName?: string;
   /**
    * The fully parsed query document.  It will be flattened (no fragments),
    * and contain placeholders for any variables in use.
@@ -41,13 +43,15 @@ export class DynamicQueryInfo implements BasicQueryInfo {
   constructor(context: CacheContext, raw: RawOperation) {
     this.operationType = 'query';
     this.fragmentMap = fragmentMapForDocument(raw.document);
+    const operation = getOperationOrDie(raw.document);
     const { parsedQuery, variables } = constructNestedQuery(
       context,
       this.fragmentMap,
-      getOperationOrDie(raw.document).selectionSet,
+      operation.selectionSet,
       raw.paths!,
       raw.fieldArguments,
     );
+    this.operationName = `DynamicQuery_${raw.fragmentName ? raw.fragmentName : operation.name && operation.name.value}`;
     this.parsed = parsedQuery;
     this.variables = variables;
   }

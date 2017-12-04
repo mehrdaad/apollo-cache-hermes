@@ -11,6 +11,8 @@ export interface BasicQueryInfo {
 
   /** All fragments in the document, indexed by name. */
   readonly fragmentMap: FragmentMap;
+  /** The name of the operation. */
+  readonly operationName?: string;
   /**
    * The fully parsed query document.  It will be flattened (no fragments),
    * and contain placeholders for any variables in use.

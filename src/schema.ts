@@ -1,11 +1,11 @@
+import { DataProxy } from 'apollo-cache';
 import { DocumentNode } from 'graphql'; // eslint-disable-line import/no-extraneous-dependencies
 
-import { StaticQueryInfo } from './context';
+import { BasicQueryInfo } from './context/BasicQueryInfo';
 import { NodeReference } from './nodes';
 import { ParsedQuery } from './ParsedQueryNode';
 import { JsonObject, JsonValue, NestedValue } from './primitive';
 import { isScalar, isObject } from './util';
-import { DataProxy } from 'apollo-cache';
 
 /**
  * Change ids track diffs to the store that may eventually be rolled back.
@@ -65,7 +65,7 @@ export interface OperationInstance {
   /** The id of the node to begin the query at. */
   readonly rootId: NodeId;
   /** A parsed GraphQL document, declaring an operation to execute. */
-  readonly info: StaticQueryInfo;
+  readonly info: BasicQueryInfo;
   /** Parsed form of the query, with values substituted for any variables. */
   readonly parsedQuery: ParsedQuery;
   /** Whether the operation contains _no_ parameterized values. */

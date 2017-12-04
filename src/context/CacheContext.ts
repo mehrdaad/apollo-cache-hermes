@@ -12,6 +12,8 @@ import { isObject } from '../util';
 import { ConsoleTracer } from './ConsoleTracer';
 import { StaticQueryInfo } from './StaticQueryInfo';
 import { Tracer } from './Tracer';
+import { DynamicQueryInfo } from './DynamicQueryInfo';
+import { BasicQueryInfo } from './BasicQueryInfo';
 
 export namespace CacheContext {
 
@@ -165,7 +167,7 @@ export class CacheContext {
   /** Whether __typename should be injected into nodes in queries. */
   private readonly _addTypename: boolean;
   /** All currently known & processed GraphQL documents. */
-  private readonly _queryInfoMap = new Map<string, StaticQueryInfo>();
+  private readonly _queryInfoMap = new Map<string, BasicQueryInfo>();
   /** All currently known & parsed queries, for identity mapping. */
   private readonly _operationMap = new Map<string, OperationInstance[]>();
 
@@ -219,7 +221,8 @@ export class CacheContext {
     }
 
     const info = this._queryInfo(cacheKey, raw);
-    const fullVariables = { ...info.variableDefaults, ...raw.variables } as JsonObject;
+    const defaultVariable = info instanceof StaticQueryInfo ? info.variableDefaults : undefined;
+    const fullVariables = { ...defaultVariable, ...raw.variables } as JsonObject;
     const operation = {
       info,
       rootId: raw.rootId,
@@ -235,9 +238,9 @@ export class CacheContext {
   /**
    * Retrieves a memoized QueryInfo for a given GraphQL document.
    */
-  private _queryInfo(cacheKey: string, raw: RawOperation): StaticQueryInfo {
+  private _queryInfo(cacheKey: string, raw: RawOperation): BasicQueryInfo {
     if (!this._queryInfoMap.has(cacheKey)) {
-      this._queryInfoMap.set(cacheKey, new StaticQueryInfo(this, raw));
+      this._queryInfoMap.set(cacheKey, raw.paths ? new DynamicQueryInfo(this, raw) : new StaticQueryInfo(this, raw));
     }
     return this._queryInfoMap.get(cacheKey)!;
   }
