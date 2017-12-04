@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 
 import { buildRawOperationFromQuery } from '../../../src/apollo/util';
 import { CacheContext } from '../../../src/context';
-import { StaticQueryInfo } from '../../../src/context/QueryInfo';
+import { StaticQueryInfo } from '../../../src/context/StaticQueryInfo';
 import { strictConfig } from '../../helpers';
 
 describe(`context.QueryInfo`, () => {

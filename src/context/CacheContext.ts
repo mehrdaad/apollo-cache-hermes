@@ -10,7 +10,7 @@ import { EntityId, OperationInstance, RawOperation } from '../schema';
 import { isObject } from '../util';
 
 import { ConsoleTracer } from './ConsoleTracer';
-import { StaticQueryInfo } from './QueryInfo';
+import { StaticQueryInfo } from './StaticQueryInfo';
 import { Tracer } from './Tracer';
 
 export namespace CacheContext {
