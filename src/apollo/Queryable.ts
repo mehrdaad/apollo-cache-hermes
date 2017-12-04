@@ -60,7 +60,7 @@ export abstract class ApolloQueryable implements DataProxy {
   }
 
   // TODO (yuisu)L: better typing
-  writeFragment(options: Cache.WriteFragmentOptions & { paths?: string[], fieldArguments?: object }): void {
+  writeFragment(options: Cache.WriteFragmentOptions): void {
     // TODO: Support nested fragments.
     const rawOperation = buildRawOperationFromFragment(options);
     this._queryable.write(rawOperation, options.data);

@@ -104,6 +104,39 @@ export function parseQuery(
 }
 
 /**
+ * Construct a tree of ParsedQueryNode instances from given paths.
+ * This is used when doing writeFragment operation
+ */
+export function constructNestedQuery(
+  context: CacheContext,
+  fragments: FragmentMap,
+  selectionSet: SelectionSetNode,
+  paths: string[],
+  fieldArguments?: { [fieldName: string]: { [argName: string]: JsonScalar } },
+): { parsedQuery: DeepReadonly<ParsedQueryWithVariables>, variables: Set<string> } {
+  const variables = new Set<string>();
+  let prevParsedQuery = _buildNodeMap(variables, context, fragments, selectionSet);
+
+  if (!prevParsedQuery) {
+    throw new Error(`Parsed a query, but found no fields present; it may use unsupported GraphQL features`);
+  }
+
+  for (let i = paths.length - 1; i >= 0; --i) {
+    const name = paths[i];
+    const nestedParsedQueryNode = new ParsedQueryNode(
+      prevParsedQuery,
+      /* schemaName */ undefined,
+      fieldArguments ? fieldArguments[name] : undefined,
+      areChildrenDynamic(prevParsedQuery)
+    );
+    prevParsedQuery = Object.create(null);
+    prevParsedQuery![name] = nestedParsedQueryNode;
+  }
+
+  return { parsedQuery: prevParsedQuery!, variables };
+}
+
+/**
  * Recursively builds a mapping of field names to ParsedQueryNodes for the given
  * selection set.
  */

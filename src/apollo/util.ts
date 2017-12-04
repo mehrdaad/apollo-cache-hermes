@@ -2,8 +2,23 @@ import { DataProxy } from 'apollo-cache';
 import { getFragmentQueryDocument } from 'apollo-utilities';
 import { DocumentNode } from 'graphql'; // eslint-disable-line import/no-extraneous-dependencies
 
-import { JsonObject } from '../primitive';
+import { JsonObject, JsonScalar } from '../primitive';
 import { NodeId, RawOperation, StaticNodeId } from '../schema';
+
+declare module 'apollo-cache/lib/types/DataProxy' {
+  namespace DataProxy {
+    interface FieldArguments {
+      [fieldName: string]: {
+        [argName: string]: JsonScalar,
+      };
+    }
+
+    interface Fragment {
+      paths?: string[];
+      fieldArguments?: DataProxy.FieldArguments;
+    }
+  }
+}
 
 /**
  * Builds a query.
@@ -16,7 +31,7 @@ export function buildRawOperationFromQuery(document: DocumentNode, variables?: J
   };
 }
 
-export function buildRawOperationFromFragment(raw: DataProxy.Fragment & { paths?: string[], fieldArguments?: object }): RawOperation {
+export function buildRawOperationFromFragment(raw: DataProxy.Fragment): RawOperation {
   return {
     rootId: raw.id,
     document: getFragmentQueryDocument(raw.fragment, raw.fragmentName),
