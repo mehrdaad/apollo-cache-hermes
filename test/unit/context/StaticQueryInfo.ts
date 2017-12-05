@@ -42,8 +42,8 @@ describe(`context.QueryInfo`, () => {
     });
 
     it(`extracts the operation`, () => {
-      expect(info.operation.name!.value).to.eq('getThings');
-      expect(info.operation.operation).to.eq('query');
+      expect(info.originalOperation.name!.value).to.eq('getThings');
+      expect(info.originalOperation.operation).to.eq('query');
     });
 
     it(`extracts the operation name`, () => {

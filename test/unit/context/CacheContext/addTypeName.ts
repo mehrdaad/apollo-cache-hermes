@@ -30,7 +30,7 @@ describe(`context.CacheContext`, () => {
         }
       }`);
 
-      const rootSelection = parsed.info.operation.selectionSet;
+      const rootSelection = parsed.info.originalOperation.selectionSet;
       expect(fieldNames(rootSelection)).to.have.members(['foo']);
 
       const fooSelection = (rootSelection.selections[0] as any).selectionSet;
@@ -48,7 +48,7 @@ describe(`context.CacheContext`, () => {
         }
       }`);
 
-      const rootSelection = parsed.info.operation.selectionSet;
+      const rootSelection = parsed.info.originalOperation.selectionSet;
       expect(fieldNames(rootSelection)).to.have.members(['foo']);
 
       const fooSelection = (rootSelection.selections[0] as any).selectionSet;
@@ -71,7 +71,7 @@ describe(`context.CacheContext`, () => {
         fragment fullFoo on Foo { bar }
       `);
 
-      const rootSelection = parsed.info.operation.selectionSet;
+      const rootSelection = parsed.info.originalOperation.selectionSet;
       expect(fieldNames(rootSelection)).to.have.members(['foo']);
 
       const fooSelection = (rootSelection.selections[0] as any).selectionSet;
@@ -90,7 +90,7 @@ describe(`context.CacheContext`, () => {
           }
       }`);
 
-      const rootSelection = parsed.info.operation.selectionSet;
+      const rootSelection = parsed.info.originalOperation.selectionSet;
       expect(fieldNames(rootSelection)).to.have.members(['asdf']);
 
       const asdfSelection = (rootSelection.selections[0] as any).selectionSet;

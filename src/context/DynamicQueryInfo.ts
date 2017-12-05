@@ -1,5 +1,5 @@
 import { // eslint-disable-line import/no-extraneous-dependencies
-  OperationTypeNode,
+  OperationTypeNode, OperationDefinitionNode,
 } from 'graphql';
 
 import { ParsedQueryWithVariables, constructNestedQuery } from '../ParsedQueryNode';
@@ -30,6 +30,8 @@ export class DynamicQueryInfo implements BasicQueryInfo {
 
   /** All fragments in the document, indexed by name. */
   readonly fragmentMap: FragmentMap;
+  /** The primary operation in the document. */
+  readonly originalOperation: OperationDefinitionNode;
   /** The name of the operation. */
   readonly operationName?: string;
   /**
@@ -43,15 +45,17 @@ export class DynamicQueryInfo implements BasicQueryInfo {
   constructor(context: CacheContext, raw: RawOperation) {
     this.operationType = 'query';
     this.fragmentMap = fragmentMapForDocument(raw.document);
-    const operation = getOperationOrDie(raw.document);
+    this.originalOperation = getOperationOrDie(raw.document);
     const { parsedQuery, variables } = constructNestedQuery(
       context,
       this.fragmentMap,
-      operation.selectionSet,
+      this.originalOperation.selectionSet,
       raw.paths!,
       raw.fieldArguments,
     );
-    this.operationName = `DynamicQuery_${raw.fragmentName ? raw.fragmentName : operation.name && operation.name.value}`;
+    this.operationName = `DynamicQuery_${raw.fragmentName
+      ? raw.fragmentName
+      : this.originalOperation.name && this.originalOperation.name.value}`;
     this.parsed = parsedQuery;
     this.variables = variables;
   }

@@ -1,4 +1,4 @@
-import { OperationTypeNode } from 'graphql';  // eslint-disable-line import/no-extraneous-dependencies
+import { OperationTypeNode, OperationDefinitionNode } from 'graphql';  // eslint-disable-line import/no-extraneous-dependencies
 
 import { ParsedQueryWithVariables } from '../ParsedQueryNode';
 import {
@@ -8,9 +8,10 @@ import {
 export interface BasicQueryInfo {
   /** The type of operation. */
   readonly operationType: OperationTypeNode;
-
   /** All fragments in the document, indexed by name. */
   readonly fragmentMap: FragmentMap;
+  /** The primary operation in the document. */
+  readonly originalOperation: OperationDefinitionNode;
   /** The name of the operation. */
   readonly operationName?: string;
   /**

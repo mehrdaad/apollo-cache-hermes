@@ -29,7 +29,7 @@ export class StaticQueryInfo implements BasicQueryInfo {
   /** The original document (after __typename fields are injected). */
   public readonly document: DocumentNode;
   /** The primary operation in the document. */
-  public readonly operation: OperationDefinitionNode;
+  public readonly originalOperation: OperationDefinitionNode;
   /** The type of operation. */
   public readonly operationType: OperationTypeNode;
   /** The name of the operation. */
@@ -54,16 +54,16 @@ export class StaticQueryInfo implements BasicQueryInfo {
 
   constructor(context: CacheContext, raw: RawOperation) {
     this.document = raw.document;
-    this.operation = getOperationOrDie(raw.document);
-    this.operationType = this.operation.operation;
-    this.operationName = this.operation.name && this.operation.name.value;
-    this.operationSource = this.operation.loc && this.operation.loc.source.body;
+    this.originalOperation = getOperationOrDie(raw.document);
+    this.operationType = this.originalOperation.operation;
+    this.operationName = this.originalOperation.name && this.originalOperation.name.value;
+    this.operationSource = this.originalOperation.loc && this.originalOperation.loc.source.body;
     this.fragmentMap = fragmentMapForDocument(raw.document);
 
-    const { parsedQuery, variables } = parseQuery(context, this.fragmentMap, this.operation.selectionSet);
+    const { parsedQuery, variables } = parseQuery(context, this.fragmentMap, this.originalOperation.selectionSet);
     this.parsed = parsedQuery;
     this.variables = variables;
-    this.variableDefaults = variableDefaultsInOperation(this.operation);
+    this.variableDefaults = variableDefaultsInOperation(this.originalOperation);
 
     // Skip verification if rawOperation is constructed from fragments
     // (e.g readFragment/writeFragment) because fragment will not declare
@@ -76,7 +76,7 @@ export class StaticQueryInfo implements BasicQueryInfo {
   private _assertValid() {
     const messages: string[] = [];
 
-    const declaredVariables = variablesInOperation(this.operation);
+    const declaredVariables = variablesInOperation(this.originalOperation);
     this._assertAllVariablesDeclared(messages, declaredVariables);
     this._assertAllVariablesUsed(messages, declaredVariables);
 
